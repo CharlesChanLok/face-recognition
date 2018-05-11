@@ -1,0 +1,46 @@
+.center {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.particles {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+  background: #1488CC;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #2B32B2, #1488CC);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #2B32B2, #1488CC); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+/* -------------------------------------- Font Face -------------------------------------- */
+@font-face {
+  font-family: moonhouse;  /* http://www.fontspace.com/nimavisual/moonhouse */
+  src: url('./font/moonhouse.ttf');
+}
+
+.FontFace_moonhouse {
+  font-family: moonhouse;
+  font-size: 1.3em;
+  background: linear-gradient(to right, #d4d235de 0%, #59cee0be 100%,  #d33b69d3 0% );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 80px;
+}
+
+
+@keyframes App-logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
