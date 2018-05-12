@@ -26,10 +26,9 @@ class App extends Component {
     this.state = {
       input: '',
       imageUrl: '',
-      faceIdentifiedBox: {}
+      faceBoundingBox: {}
     }
   }
-
 
   findFaceLocation = (data) => {
     const face = data.outputs[0].data.regions[0].region_info.bounding_box;
@@ -44,9 +43,9 @@ class App extends Component {
     }
   }
 
-  displayFaceIdentifiedBox = (box) => {
+  displayFaceBoundingBox = (box) => {
     console.log(box);
-    this.setState({ faceIdentifiedBox: box });
+    this.setState({ faceBoundingBox: box });
   }
 
   handleInputChange = (event) => {
@@ -60,7 +59,7 @@ class App extends Component {
       const res = await app.models.predict(
         Clarifai.FACE_DETECT_MODEL,
         this.state.input);
-      this.displayFaceIdentifiedBox(this.findFaceLocation(res));
+      this.displayFaceBoundingBox(this.findFaceLocation(res));
       //console.log(res.outputs[0].data.regions[0].region_info.bounding_box);
     }
     catch (err) {
@@ -69,6 +68,7 @@ class App extends Component {
   }
 
   render() {
+    const { imageUrl, faceBoundingBox } = this.state;
     return (
       <div className="App" >
         <Particles
@@ -81,7 +81,9 @@ class App extends Component {
         <ImageInputForm
           handleInputChange={this.handleInputChange}
           handleSubmit={this.handleSubmit} />
-        <FaceRecognitionFrame imageUrl={this.state.imageUrl} />
+        <FaceRecognitionFrame
+          faceBoundingBox={faceBoundingBox}
+          imageUrl={imageUrl} />
       </div>
 
     );
