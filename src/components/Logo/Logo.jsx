@@ -1,6 +1,5 @@
 import React from 'react';
 import Tilt from 'react-tilt'
-import 'tachyons';
 import './Logo.css';
 
 const Logo = () => {

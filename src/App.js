@@ -6,6 +6,7 @@ import Logo from './components/Logo/Logo';
 import Rank from './components/Rank/Rank';
 import ImageInputForm from './components/ImageInputForm/ImageInputForm';
 import FaceRecognitionFrame from './components/FaceRecognitionFrame/FaceRecognitionFrame';
+import Signin from './components/Signin/Signin';
 
 /* Background setting of particles-js*/
 import Particles from 'react-particles-js';
@@ -75,6 +76,7 @@ class App extends Component {
           className='particles'
           params={particlesOpts}
         />
+        <Signin />
         <Navigation />
         <Logo />
         <Rank />
