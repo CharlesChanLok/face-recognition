@@ -17,7 +17,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const app = new Clarifai.App({
- apiKey: process.env.REACT_APP_CLARIFAI_API_KEY
+  apiKey: process.env.REACT_APP_CLARIFAI_API_KEY
 });
 
 class App extends Component {
@@ -25,25 +25,46 @@ class App extends Component {
     super();
     this.state = {
       input: '',
-      imageUrl: ''
+      imageUrl: '',
+      faceIdentifiedBox: {}
     }
   }
 
+
+  findFaceLocation = (data) => {
+    const face = data.outputs[0].data.regions[0].region_info.bounding_box;
+    const image = document.getElementById('imageFrame');
+    const width = Number(image.width);
+    const height = Number(image.height);
+    return {
+      leftCol: face.left_col * width,
+      topRow: face.top_row * height,
+      rightCol: width - (face.right_col * width),
+      bottomRow: height - (face.bottom_row * height)
+    }
+  }
+
+  displayFaceIdentifiedBox = (box) => {
+    console.log(box);
+    this.setState({ faceIdentifiedBox: box });
+  }
+
   handleInputChange = (event) => {
-    this.setState({input: event.target.value})
+    this.setState({ input: event.target.value });
 
   }
 
   handleSubmit = async () => {
-    this.setState({imageUrl: this.state.input})
+    this.setState({ imageUrl: this.state.input });
     try {
       const res = await app.models.predict(
         Clarifai.FACE_DETECT_MODEL,
-        this.state.input)
-        console.log(res.outputs[0].data.regions[0].region_info.bounding_box);
+        this.state.input);
+      this.displayFaceIdentifiedBox(this.findFaceLocation(res));
+      //console.log(res.outputs[0].data.regions[0].region_info.bounding_box);
     }
     catch (err) {
-        console.log(err);
+      console.log(err);
     }
   }
 
@@ -60,8 +81,7 @@ class App extends Component {
         <ImageInputForm
           handleInputChange={this.handleInputChange}
           handleSubmit={this.handleSubmit} />
-
-         <FaceRecognitionFrame imageUrl={this.state.imageUrl}/> 
+        <FaceRecognitionFrame imageUrl={this.state.imageUrl} />
       </div>
 
     );
