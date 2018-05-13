@@ -7,6 +7,7 @@ import Rank from './components/Rank/Rank';
 import ImageInputForm from './components/ImageInputForm/ImageInputForm';
 import FaceRecognitionFrame from './components/FaceRecognitionFrame/FaceRecognitionFrame';
 import Signin from './components/Signin/Signin';
+import Signup from './components/Signup/Signup';
 
 /* Background setting of particles-js*/
 import Particles from 'react-particles-js';
@@ -27,7 +28,9 @@ class App extends Component {
     this.state = {
       input: '',
       imageUrl: '',
-      faceBoundingBox: {}
+      faceBoundingBox: {},
+      route: 'signin',
+      isSignedIn: false
     }
   }
 
@@ -43,7 +46,7 @@ class App extends Component {
       bottomRow: height - (face.bottom_row * height)
     }
   }
-
+  /* event handler methods*/
   displayFaceBoundingBox = (box) => {
     console.log(box);
     this.setState({ faceBoundingBox: box });
@@ -68,27 +71,46 @@ class App extends Component {
     }
   }
 
+  /* handle sign and signout methods */
+  handleRouteChange = (route) => {
+    if (route === 'signout') {
+      this.setState({ isSignedIn: false })
+    } else if (route === 'home') {
+      this.setState({ isSignedIn: true });
+    }
+    this.setState({ route: route });
+  }
+
+
   render() {
-    const { imageUrl, faceBoundingBox } = this.state;
+    const { imageUrl, faceBoundingBox, isSignedIn, route } = this.state;
     return (
       <div className="App" >
         <Particles
           className='particles'
           params={particlesOpts}
         />
-        <Signin />
-        <Navigation />
-        <Logo />
-        <Rank />
-        <ImageInputForm
-          handleInputChange={this.handleInputChange}
-          handleSubmit={this.handleSubmit} />
-        <FaceRecognitionFrame
-          faceBoundingBox={faceBoundingBox}
-          imageUrl={imageUrl} />
+        <Navigation isSignedIn={isSignedIn} handleRouteChange={this.handleRouteChange} />
+        {route === 'home'
+          ?
+          <div>
+            <Logo />
+            <Rank />
+            <ImageInputForm
+              handleInputChange={this.handleInputChange}
+              handleSubmit={this.handleSubmit} />
+            <FaceRecognitionFrame
+              faceBoundingBox={faceBoundingBox}
+              imageUrl={imageUrl} />
+          </div>
+          : (
+            route === 'signin'
+              ? <Signin handleRouteChange={this.handleRouteChange} />
+              : <Signup handleRouteChange={this.handleRouteChange} />
+          )
+        }
       </div>
-
-    );
+    )
   }
 }
 

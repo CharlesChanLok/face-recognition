@@ -22,8 +22,8 @@ const styles = {
   },
 };
 
-function Navigation(props) {
-  const { classes } = props;
+const Navigation = (props) => {
+  const { classes, handleRouteChange, isSignedIn } = props;
   return (
     <div className={classes.root}>
       <AppBar position="static" className='Navigation_topbar_background_color'>
@@ -34,7 +34,14 @@ function Navigation(props) {
           <Typography variant="title" color="inherit" className={classes.flex}>
             <p className='FontFace_moonhouse'>Face Recognition</p>
           </Typography>
-          <Button color="inherit">Logout</Button>
+          {isSignedIn ?
+            <Button onClick={() => handleRouteChange('signout')} color="inherit">Logout</Button>
+            : <div>
+              <Button onClick={() => handleRouteChange('signin')} color="inherit">Sign In</Button>
+              <Button onClick={() => handleRouteChange('signup')} color="inherit">Sign Up</Button>
+            </div>
+          }
+
         </Toolbar>
       </AppBar>
     </div>
