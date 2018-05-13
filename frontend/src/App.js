@@ -9,9 +9,6 @@ import FaceRecognitionFrame from './components/FaceRecognitionFrame/FaceRecognit
 import Signin from './components/Signin/Signin';
 import Signup from './components/Signup/Signup';
 
-/* Background setting of particles-js*/
-import Particles from 'react-particles-js';
-import particlesOpts from './particlesjs-config.json';
 /* Face recognition API */
 import Clarifai from 'clarifai';
 /* environment variable */
@@ -86,10 +83,6 @@ class App extends Component {
     const { imageUrl, faceBoundingBox, isSignedIn, route } = this.state;
     return (
       <div className="App" >
-        <Particles
-          className='particles'
-          params={particlesOpts}
-        />
         <Navigation isSignedIn={isSignedIn} handleRouteChange={this.handleRouteChange} />
         {route === 'home'
           ?
