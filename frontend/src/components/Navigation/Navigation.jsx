@@ -35,7 +35,7 @@ const Navigation = (props) => {
             <p className='FontFace_moonhouse'>Face Recognition</p>
           </Typography>
           {isSignedIn ?
-            <Button onClick={() => handleRouteChange('signout')} color="inherit">Logout</Button>
+            <Button onClick={() => handleRouteChange('signin')} color="inherit">Logout</Button>
             : <div>
               <Button onClick={() => handleRouteChange('signin')} color="inherit">Sign In</Button>
               <Button onClick={() => handleRouteChange('signup')} color="inherit">Sign Up</Button>
