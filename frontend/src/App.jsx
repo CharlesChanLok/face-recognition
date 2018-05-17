@@ -37,17 +37,17 @@ class App extends Component {
         }
     }
 
-    loadUser = (data) => [
+    loadUser = (data) => {
         this.setState({
             user: {
                 id: data.id,
                 name: data.name,
                 email: data.email,
                 entries: data.entries,
-                joined: data.joined
+                joined: data.create_at
             }
         })
-    ]
+    }
 
     findFaceLocation = (data) => {
         const face = data.outputs[0].data.regions[0].region_info.bounding_box;
@@ -64,7 +64,6 @@ class App extends Component {
 
     /* event handler methods*/
     displayFaceBoundingBox = (box) => {
-        console.log(box);
         this.setState({ faceBoundingBox: box });
     }
 
@@ -81,22 +80,24 @@ class App extends Component {
             //     this.state.input);
             // if (clarifaiResponse) {
             //     try {
-                    const response = await fetch(`${process.env.REACT_APP_SERVER}/image`, {
-                        method: 'put',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            id: this.state.user.id
-                        })
-                    });
-                    const entries = await response.json();
-                    this.setState({user: {
-                        ...this.state.user,
-                        entries: entries
-                    }})
+            const response = await fetch(`${process.env.REACT_APP_SERVER}/image`, {
+                method: 'put',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id: this.state.user.id
+                })
+            });
+            const entries = await response.json();
+            this.setState({
+                user: {
+                    ...this.state.user,
+                    entries: entries
                 }
-                catch (err) {
-                    console.log(err);
-                }
+            })
+        }
+        catch (err) {
+            console.log(err);
+        }
         //     }
         //     this.displayFaceBoundingBox(this.findFaceLocation(clarifaiResponse));
         //     //console.log(res.outputs[0].data.regions[0].region_info.bounding_box);
@@ -117,7 +118,6 @@ class App extends Component {
     }
 
     render() {
-        console.log(this.state.user);
         const { imageUrl, faceBoundingBox, isSignedIn, route, user } = this.state;
         return (
             <div className="App" >

@@ -76,6 +76,7 @@ class Signup extends React.Component {
             email,
             password,
             confirmPassword } = this.state;
+            console.log('signup state:' ,this.state);
         if (this.isValidPassword(password) &&
             this.isEqualPassword(password, confirmPassword)) {
             const res = await fetch(`${process.env.REACT_APP_SERVER}/signup`, {
@@ -84,11 +85,11 @@ class Signup extends React.Component {
                 body: JSON.stringify({
                     name: name,
                     email: email,
-                    password: password,
+                    password: password
                 })
             });
             const user = await res.json();
-            console.log(user);
+
             if (user) {
                 this.props.loadUser(user);
                 this.props.handleRouteChange('home');
