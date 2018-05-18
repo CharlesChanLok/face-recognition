@@ -49,6 +49,23 @@ class App extends Component {
         })
     }
 
+    clearUser = () => {
+        this.setState({
+            input: '',
+            imageUrl: '',
+            faceBoundingBox: {},
+            route: 'signin',
+            isSignedIn: false,
+            user: {
+                id: '',
+                name: '',
+                email: '',
+                entries: 0,
+                joined: ''
+            }
+        })
+    }
+
     findFaceLocation = (data) => {
         const face = data.outputs[0].data.regions[0].region_info.bounding_box;
         const image = document.getElementById('imageFrame');
@@ -75,42 +92,42 @@ class App extends Component {
     handleImageSubmit = async () => {
         this.setState({ imageUrl: this.state.input });
         try {
-            // const clarifaiResponse = await app.models.predict(
-            //     Clarifai.FACE_DETECT_MODEL,
-            //     this.state.input);
-            // if (clarifaiResponse) {
-            //     try {
-            const response = await fetch(`${process.env.REACT_APP_SERVER}/image`, {
-                method: 'put',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    id: this.state.user.id
-                })
-            });
-            const entries = await response.json();
-            this.setState({
-                user: {
-                    ...this.state.user,
-                    entries: entries
+            const clarifaiResponse = await app.models.predict(
+                Clarifai.FACE_DETECT_MODEL,
+                this.state.input);
+            if (clarifaiResponse) {
+                try {
+                    const response = await fetch(`${process.env.REACT_APP_SERVER}/image`, {
+                        method: 'put',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            id: this.state.user.id
+                        })
+                    });
+                    const entries = await response.json();
+                    this.setState({
+                        user: {
+                            ...this.state.user,
+                            entries: entries
+                        }
+                    })
                 }
-            })
+                catch (err) {
+                    console.log(err);
+                }
+            }
+            this.displayFaceBoundingBox(this.findFaceLocation(clarifaiResponse));
+            //console.log(res.outputs[0].data.regions[0].region_info.bounding_box);
         }
         catch (err) {
             console.log(err);
         }
-        //     }
-        //     this.displayFaceBoundingBox(this.findFaceLocation(clarifaiResponse));
-        //     //console.log(res.outputs[0].data.regions[0].region_info.bounding_box);
-        // }
-        // catch (err) {
-        //     console.log(err);
-        // }
     }
 
     /* handle sign and signout methods */
     handleRouteChange = (route) => {
         if (route === 'signout' || route === 'signin') {
-            this.setState({ isSignedIn: false })
+            this.clearUser();
         } else if (route === 'home') {
             this.setState({ isSignedIn: true });
         }

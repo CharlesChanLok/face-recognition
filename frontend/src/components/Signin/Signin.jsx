@@ -30,6 +30,9 @@ class Signin extends React.Component {
     if (user.id) {
       this.props.loadUser(user);
       this.props.handleRouteChange('home');
+    } else {
+      //prompt errorusing modal
+      console.log('Failed to signin because of wrong email or password');
     }
   }
 
