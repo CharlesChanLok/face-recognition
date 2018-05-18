@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "@types/bcrypt": "^2.0.0",
+    "@types/bluebird": "^3.5.20",
     "@types/body-parser": "^1.17.0",
     "@types/cors": "^2.8.4",
     "@types/dotenv": "^4.0.3",
