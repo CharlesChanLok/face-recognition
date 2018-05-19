@@ -77,14 +77,14 @@ class App extends Component {
             const clarifaiResponse = await response.json();
             if (clarifaiResponse) {
                 try {
-                    const response = await fetch(`${process.env.REACT_APP_SERVER}/users/image`, {
+                    const response2 = await fetch(`${process.env.REACT_APP_SERVER}/users/image`, {
                         method: 'put',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             id: this.state.user.id
                         })
                     });
-                    const entries = await response.json();
+                    const entries = await response2.json();
                     this.setState({
                         user: {
                             ...this.state.user,
