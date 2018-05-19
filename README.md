@@ -1,19 +1,11 @@
 # Setup
+
 ## Frontend:
-Create a .env in the root directory. 
+Create a .env in the root directory.
+/frontend/.env
 
-### API Key
-REACT_APP_CLARIFAI_API_KEY="Your Clarifai Api Key"
+###In the .env: 
+REACT_APP_SERVER='Your api server'
 
-##Backend
-NODE_ENV=
-## Database
-DB_HOST=
-DB_PORT=
-DB_NAME=
-DB_USERNAME=
-DB_PASSWORD=
-
-
-1. npm install
+1. npm install 
 2. npm start

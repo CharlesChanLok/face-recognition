@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import './App.css';
 /* Components */
-import Navigation from './components/Navigation/Navigation';
-import Logo from './components/Logo/Logo';
-import Rank from './components/Rank/Rank';
-import ImageInputForm from './components/ImageInputForm/ImageInputForm';
 import FaceRecognitionFrame from './components/FaceRecognitionFrame/FaceRecognitionFrame';
+import ImageInputForm from './components/ImageInputForm/ImageInputForm';
+import Logo from './components/Logo/Logo';
+import Navigation from './components/Navigation/Navigation';
+import Rank from './components/Rank/Rank';
 import Signin from './components/Signin/Signin';
 import Signup from './components/Signup/Signup';
 
@@ -77,7 +77,7 @@ class App extends Component {
             const clarifaiResponse = await response.json();
             if (clarifaiResponse) {
                 try {
-                    const response = await fetch(`${process.env.REACT_APP_SERVER}/image`, {
+                    const response = await fetch(`${process.env.REACT_APP_SERVER}/users/image`, {
                         method: 'put',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -97,7 +97,6 @@ class App extends Component {
                 }
             }
             this.displayFaceBoundingBox(this.findFaceLocation(clarifaiResponse));
-            //console.log(res.outputs[0].data.regions[0].region_info.bounding_box);
         }
         catch (err) {
             console.log(err);

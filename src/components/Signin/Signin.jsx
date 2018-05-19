@@ -18,7 +18,7 @@ class Signin extends React.Component {
   }
 
   handleSubmit = async () => {
-    const res = await fetch(`${process.env.REACT_APP_SERVER}/signin`, {
+    const res = await fetch(`${process.env.REACT_APP_SERVER}/users/signin`, {
       method: 'post',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
