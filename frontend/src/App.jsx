@@ -9,32 +9,24 @@ import FaceRecognitionFrame from './components/FaceRecognitionFrame/FaceRecognit
 import Signin from './components/Signin/Signin';
 import Signup from './components/Signup/Signup';
 
-/* Face recognition API */
-import Clarifai from 'clarifai';
-
-const { REACT_APP_CLARIFAI_API_KEY } = process.env;
-
-const app = new Clarifai.App({
-    apiKey: REACT_APP_CLARIFAI_API_KEY
-});
-
+const initialState = {
+    input: '',
+    imageUrl: '',
+    faceBoundingBox: {},
+    route: 'signin',
+    isSignedIn: false,
+    user: {
+        id: '',
+        name: '',
+        email: '',
+        entries: 0,
+        joined: ''
+    }
+}
 class App extends Component {
     constructor() {
         super();
-        this.state = {
-            input: '',
-            imageUrl: '',
-            faceBoundingBox: {},
-            route: 'signin',
-            isSignedIn: false,
-            user: {
-                id: '',
-                name: '',
-                email: '',
-                entries: 0,
-                joined: ''
-            }
-        }
+        this.state = initialState;
     }
 
     loadUser = (data) => {
@@ -45,23 +37,6 @@ class App extends Component {
                 email: data.email,
                 entries: data.entries,
                 joined: data.create_at
-            }
-        })
-    }
-
-    clearUser = () => {
-        this.setState({
-            input: '',
-            imageUrl: '',
-            faceBoundingBox: {},
-            route: 'signin',
-            isSignedIn: false,
-            user: {
-                id: '',
-                name: '',
-                email: '',
-                entries: 0,
-                joined: ''
             }
         })
     }
@@ -92,9 +67,14 @@ class App extends Component {
     handleImageSubmit = async () => {
         this.setState({ imageUrl: this.state.input });
         try {
-            const clarifaiResponse = await app.models.predict(
-                Clarifai.FACE_DETECT_MODEL,
-                this.state.input);
+            const response = await fetch(`${process.env.REACT_APP_SERVER}/api/clarifai/facedetection`, {
+                method: 'post',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    input: this.state.input
+                })
+            });
+            const clarifaiResponse = await response.json();
             if (clarifaiResponse) {
                 try {
                     const response = await fetch(`${process.env.REACT_APP_SERVER}/image`, {
@@ -127,7 +107,7 @@ class App extends Component {
     /* handle sign and signout methods */
     handleRouteChange = (route) => {
         if (route === 'signout' || route === 'signin') {
-            this.clearUser();
+            this.setState(initialState);
         } else if (route === 'home') {
             this.setState({ isSignedIn: true });
         }

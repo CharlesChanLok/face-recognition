@@ -28,7 +28,6 @@ class Signup extends React.Component {
 
     //https://keithscode.com/tutorials/javascript/3-a-simple-javascript-password-validator.html
     checkPassword = () => {
-        console.log('checkpass')
         // //Store the password field objects into variables ...
         let pass1 = document.getElementById('pass1');
         let pass2 = document.getElementById('pass2');
@@ -76,7 +75,6 @@ class Signup extends React.Component {
             email,
             password,
             confirmPassword } = this.state;
-            console.log('signup state:' ,this.state);
         if (this.isValidPassword(password) &&
             this.isEqualPassword(password, confirmPassword)) {
             const res = await fetch(`${process.env.REACT_APP_SERVER}/signup`, {
@@ -90,7 +88,7 @@ class Signup extends React.Component {
             });
             const user = await res.json();
 
-            if (user) {
+            if (user.id) {
                 this.props.loadUser(user);
                 this.props.handleRouteChange('home');
             }
