@@ -67,6 +67,8 @@ class App extends Component {
 
     handleImageSubmit = async () => {
         this.setState({ imageUrl: this.state.input });
+        const imageInput = document.getElementById('imageInput');
+        imageInput.value = '';
         try {
             const response = await fetch(`${process.env.REACT_APP_SERVER}/api/clarifai/facedetection`, {
                 method: 'post',
@@ -94,15 +96,16 @@ class App extends Component {
                     })
                 }
                 catch (err) {
-                    console.log(err);
+                    // console.log(err);
                 }
                 this.displayFaceBoundingBox(this.findFaceLocation(clarifaiResponse));
             }
-
         }
         catch (err) {
-            console.log(err);
+            // console.log(err);
         }
+
+
     }
 
     /* handle sign and signout methods */
@@ -116,7 +119,7 @@ class App extends Component {
     }
 
     render() {
-        const { imageUrl, faceBoundingBox, isSignedIn, route, user } = this.state;
+        const { imageUrl, faceBoundingBox, isSignedIn, route, user, input } = this.state;
         return (
             <div className="App" >
                 <Navigation isSignedIn={isSignedIn} handleRouteChange={this.handleRouteChange} />
@@ -127,7 +130,8 @@ class App extends Component {
                         <Rank name={user.name} entries={user.entries} />
                         <ImageInputForm
                             handleInputChange={this.handleInputChange}
-                            handleImageSubmit={this.handleImageSubmit} />
+                            handleImageSubmit={this.handleImageSubmit}
+                            input={input} />
                         <FaceRecognitionFrame
                             faceBoundingBox={faceBoundingBox}
                             imageUrl={imageUrl} />
