@@ -5,7 +5,7 @@ const ImageInputForm = (props) => {
     const { handleInputChange, handleImageSubmit } = props;
     return (
         <div >
-            <p>Please upload your image below</p>
+            <p>Please input the image url below</p>
             <div className='center'>
                 <div className='ImageInputForm_background pa4 br3 shadow-5 '>
                     <input type="text" className='f4 pa2 w-70' onChange={handleInputChange} />

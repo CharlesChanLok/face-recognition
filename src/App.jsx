@@ -23,6 +23,7 @@ const initialState = {
         joined: ''
     }
 }
+
 class App extends Component {
     constructor() {
         super();
@@ -75,16 +76,16 @@ class App extends Component {
                 })
             });
             const clarifaiResponse = await response.json();
-            if (clarifaiResponse) {
+            if (clarifaiResponse.outputs) {
                 try {
-                    const response2 = await fetch(`${process.env.REACT_APP_SERVER}/users/image`, {
+                    const response = await fetch(`${process.env.REACT_APP_SERVER}/users/image`, {
                         method: 'put',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             id: this.state.user.id
                         })
                     });
-                    const entries = await response2.json();
+                    const entries = await response.json();
                     this.setState({
                         user: {
                             ...this.state.user,
@@ -95,8 +96,9 @@ class App extends Component {
                 catch (err) {
                     console.log(err);
                 }
+                this.displayFaceBoundingBox(this.findFaceLocation(clarifaiResponse));
             }
-            this.displayFaceBoundingBox(this.findFaceLocation(clarifaiResponse));
+
         }
         catch (err) {
             console.log(err);
