@@ -53,6 +53,7 @@ class App extends Component {
             rightCol: width - (face.right_col * width),
             bottomRow: height - (face.bottom_row * height)
         }
+
     }
 
     /* event handler methods*/
@@ -68,7 +69,9 @@ class App extends Component {
     handleImageSubmit = async () => {
         this.setState({ imageUrl: this.state.input });
         const imageInput = document.getElementById('imageInput');
+        const newImage = document.getElementById('imageFrame').src;
         imageInput.value = '';
+
         try {
             const response = await fetch(`${process.env.REACT_APP_SERVER}/api/clarifai/facedetection`, {
                 method: 'post',
@@ -78,7 +81,8 @@ class App extends Component {
                 })
             });
             const clarifaiResponse = await response.json();
-            if (clarifaiResponse.outputs) {
+            //This will run only if the image url is valid and not the same image url
+            if (clarifaiResponse.outputs && this.state.imageUrl !== newImage) {
                 try {
                     const response = await fetch(`${process.env.REACT_APP_SERVER}/users/image`, {
                         method: 'put',
@@ -104,8 +108,6 @@ class App extends Component {
         catch (err) {
             // console.log(err);
         }
-
-
     }
 
     /* handle sign and signout methods */
