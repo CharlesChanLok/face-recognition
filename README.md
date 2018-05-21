@@ -1,7 +1,7 @@
-# Setup
+# face-recognition
 
 ## Frontend:
-Create a .env in the root directory.
+Create a .env in the root directory. \
 /frontend/.env
 
 ### In the .env: 
