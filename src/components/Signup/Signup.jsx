@@ -61,8 +61,8 @@ class Signup extends React.Component {
         }
     }
 
-    isValidPassword = (pass1) => {
-        return pass1.length >= 8 && pass1.length <= 64;
+    isValidPassword = (pass) => {
+        return pass.length >= 8 && pass.length <= 64;
     }
 
     isEqualPassword = (pass1, pass2) => {
