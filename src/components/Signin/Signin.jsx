@@ -71,7 +71,7 @@ class Signin extends React.Component {
                 value="Sign in" />
             </div>
             <div className="lh-copy mt3">
-              <a onClick={() => handleRouteChange('signup')} className="f6 link dim black db">Sign up</a>
+              <div onClick={() => handleRouteChange('signup')} className="f6 link dim black db">Sign up</div>
             </div>
           </div>
         </main>
