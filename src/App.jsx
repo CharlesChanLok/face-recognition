@@ -12,7 +12,7 @@ import Signup from './components/Signup/Signup';
 const initialState = {
     input: '',
     imageUrl: '',
-    faceBoundingBox: {},
+    faceBoundingBoxes: [],
     route: 'signin',
     isSignedIn: false,
     user: {
@@ -42,28 +42,31 @@ class App extends Component {
         })
     }
 
-    findFaceLocation = (data) => {
-        const face = data.outputs[0].data.regions[0].region_info.bounding_box;
+    findFaceLocations = (data) => {
+        const faces = data.outputs[0].data.regions;
         const image = document.getElementById('imageFrame');
         const width = Number(image.width);
         const height = Number(image.height);
-        return {
-            leftCol: face.left_col * width,
-            topRow: face.top_row * height,
-            rightCol: width - (face.right_col * width),
-            bottomRow: height - (face.bottom_row * height)
-        }
 
+        return faces.map((face) => {
+            face = face.region_info.bounding_box;
+            return {
+                leftCol: face.left_col * width,
+                topRow: face.top_row * height,
+                rightCol: width - (face.right_col * width),
+                bottomRow: height - (face.bottom_row * height)
+            }
+        })
     }
 
     /* event handler methods*/
-    displayFaceBoundingBox = (box) => {
-        this.setState({ faceBoundingBox: box });
+    displayfaceBoundingBoxes = (boxes) => {
+        this.setState({ faceBoundingBoxes: boxes });
     }
 
     handleInputChange = (event) => {
         this.setState({ input: event.target.value });
-
+        
     }
 
     handleImageSubmit = async () => {
@@ -102,7 +105,7 @@ class App extends Component {
                 catch (err) {
                     // console.log(err);
                 }
-                this.displayFaceBoundingBox(this.findFaceLocation(clarifaiResponse));
+                this.displayfaceBoundingBoxes(this.findFaceLocations(clarifaiResponse));
             }
         }
         catch (err) {
@@ -121,7 +124,7 @@ class App extends Component {
     }
 
     render() {
-        const { imageUrl, faceBoundingBox, isSignedIn, route, user, input } = this.state;
+        const { imageUrl, faceBoundingBoxes, isSignedIn, route, user, input } = this.state;
         return (
             <div className="App" >
                 <Navigation isSignedIn={isSignedIn} handleRouteChange={this.handleRouteChange} />
@@ -135,7 +138,7 @@ class App extends Component {
                             handleImageSubmit={this.handleImageSubmit}
                             input={input} />
                         <FaceRecognitionFrame
-                            faceBoundingBox={faceBoundingBox}
+                            faceBoundingBoxes={faceBoundingBoxes}
                             imageUrl={imageUrl} />
                     </div>
                     :

@@ -11,7 +11,7 @@ const ImageInputForm = (props) => {
                     <input
                         id='imageInput'
                         placeholder='Put the image url here'
-                        value={this.input}
+                        value={input}
                         type="text"
                         className='f4 pa2 w-70'
                         onChange={handleInputChange} />
