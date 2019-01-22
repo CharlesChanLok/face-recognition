@@ -68,7 +68,7 @@ class ProfileIcon extends React.Component {
                     </MenuItem>
                     <MenuItem
                       onClick={() => {
-                        this.props.handleRouteChange("signin");
+                        this.props.handleRouteChange("signout");
                         this.handleClose();
                       }}
                     >

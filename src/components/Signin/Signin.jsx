@@ -1,40 +1,59 @@
-import React from 'react';
+import React from "react";
 
 class Signin extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      email: '',
-      password: ''
-    }
+      email: "",
+      password: ""
+    };
   }
 
   handleEmailChange = (event) => {
     this.setState({ email: event.target.value });
-  }
+  };
 
   handlePasswordChange = (event) => {
-    this.setState({password: event.target.value });
-  }
+    this.setState({ password: event.target.value });
+  };
+
+  saveAuthTokenInSession = (token) => {
+    window.sessionStorage.setItem("token", token);
+  };
 
   handleSubmit = async () => {
     const res = await fetch(`${process.env.REACT_APP_SERVER}/users/signin`, {
-      method: 'post',
-      headers: { 'Content-Type': 'application/json' },
+      method: "post",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         email: this.state.email,
         password: this.state.password
       })
     });
-    const user = await res.json();
-    if (user.id) {
-      this.props.loadUser(user);
-      this.props.handleRouteChange('home');
+    const data = await res.json();
+    if (data.userId && data.success) {
+      this.saveAuthTokenInSession(data.token);
+      const res = await fetch(
+        `${process.env.REACT_APP_SERVER}/profile/${data.userId}`,
+        {
+          method: "get",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: data.token
+          }
+        }
+      );
+
+      const user = await res.json();
+      if (user && user.email) {
+        this.props.loadUser(user);
+        this.props.handleRouteChange("home");
+      }
     } else {
-      //prompt errorusing modal
-      console.log('Failed to signin because of wrong email or password');
+      //prompt error using modal
+      console.log("Failed to signin because of wrong email or password");
     }
-  }
+  };
 
   render() {
     const { handleRouteChange } = this.props;
@@ -45,22 +64,28 @@ class Signin extends React.Component {
             <fieldset id="sign_up" className="ba b--transparent ph0 mh0">
               <legend className="f1 fw6 ph0 mh0 center">Sign In</legend>
               <div className="mt3">
-                <label className="db fw6 lh-copy f6" htmlFor="email-address">Email</label>
+                <label className="db fw6 lh-copy f6" htmlFor="email-address">
+                  Email
+                </label>
                 <input
                   onChange={this.handleEmailChange}
                   className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
                   type="email"
                   name="email-address"
-                  id="email-address" />
+                  id="email-address"
+                />
               </div>
               <div className="mv3">
-                <label className="db fw6 lh-copy f6" htmlFor="password">Password</label>
+                <label className="db fw6 lh-copy f6" htmlFor="password">
+                  Password
+                </label>
                 <input
                   onChange={this.handlePasswordChange}
                   className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
                   type="password"
                   name="password"
-                  id="password" />
+                  id="password"
+                />
               </div>
             </fieldset>
             <div className="">
@@ -68,10 +93,16 @@ class Signin extends React.Component {
                 onClick={this.handleSubmit}
                 className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 dib"
                 type="submit"
-                value="Sign in" />
+                value="Sign in"
+              />
             </div>
             <div className="lh-copy mt3">
-              <div onClick={() => handleRouteChange('signup')} className="f6 link dim black db">Sign up</div>
+              <div
+                onClick={() => handleRouteChange("signup")}
+                className="f6 link dim black db"
+              >
+                Sign up
+              </div>
             </div>
           </div>
         </main>

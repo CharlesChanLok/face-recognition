@@ -40,16 +40,21 @@ class Profile extends React.Component {
 
   handleProfileUpdate = async (data) => {
     try {
-      await fetch(
+      const res = await fetch(
         `${process.env.REACT_APP_SERVER}/profile/${this.props.user.id}`,
         {
           method: "put",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": window.sessionStorage.getItem("token")
+          },
           body: JSON.stringify({ formInput: data })
         }
       );
-      this.props.toggleModal();
-      this.props.loadUser({ ...this.props.user, ...data });
+      if (res.status === 200 || res.status === 304) {
+        this.props.toggleModal();
+        this.props.loadUser({ ...this.props.user, ...data });
+      }
     } catch (err) {
       console.log(err);
     }
@@ -90,14 +95,16 @@ class Profile extends React.Component {
                 id="age"
                 label="Age"
                 className="profile-modal-text-field"
-                defaultValue={"18"}
+                defaultValue={user.age}
+                onChange={this.handleChange("age")}
                 margin="normal"
               />
               <TextField
                 id="pet"
                 label="Pet"
                 className="profile-modal-text-field"
-                defaultValue={"Panda"}
+                defaultValue={user.pet}
+                onChange={this.handleChange("pet")}
                 margin="normal"
               />
               <div className="profile-modal-bottom">

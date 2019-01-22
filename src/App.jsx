@@ -24,6 +24,8 @@ const initialState = {
     email: "",
     entries: 0,
     joined: "",
+    age: 0,
+    pet: ""
   }
 };
 
@@ -33,6 +35,45 @@ class App extends Component {
     this.state = initialState;
   }
 
+  async componentDidMount() {
+    const token = window.sessionStorage.getItem("token");
+    try {
+      if (token) {
+        const res = await fetch(
+          `${process.env.REACT_APP_SERVER}/users/signin`,
+          {
+            method: "post",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: token
+            }
+          }
+        );
+        const data = await res.json();
+        if (data && data.id) {
+          const res = await fetch(
+            `${process.env.REACT_APP_SERVER}/profile/${data.id}`,
+            {
+              method: "get",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: token
+              }
+            }
+          );
+
+          const user = await res.json();
+          if (user && user.email) {
+            this.loadUser(user);
+            this.handleRouteChange("home");
+          }
+        }
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   loadUser = (data) => {
     this.setState({
       user: {
@@ -40,31 +81,38 @@ class App extends Component {
         name: data.name,
         email: data.email,
         entries: data.entries,
-        joined: data.joined
+        joined: data.joined,
+        age: data.age,
+        pet: data.pet
       }
     });
   };
 
   findFaceLocations = (data) => {
-    const faces = data.outputs[0].data.regions;
-    const image = document.getElementById("imageFrame");
-    const width = Number(image.width);
-    const height = Number(image.height);
+    if (data && data.outputs) {
+      const faces = data.outputs[0].data.regions;
+      const image = document.getElementById("imageFrame");
+      const width = Number(image.width);
+      const height = Number(image.height);
 
-    return faces.map((face) => {
-      face = face.region_info.bounding_box;
-      return {
-        leftCol: face.left_col * width,
-        topRow: face.top_row * height,
-        rightCol: width - face.right_col * width,
-        bottomRow: height - face.bottom_row * height
-      };
-    });
+      return faces.map((face) => {
+        face = face.region_info.bounding_box;
+        return {
+          leftCol: face.left_col * width,
+          topRow: face.top_row * height,
+          rightCol: width - face.right_col * width,
+          bottomRow: height - face.bottom_row * height
+        };
+      });
+    }
+    return;
   };
 
   /* event handler methods*/
   displayfaceBoundingBoxes = (boxes) => {
-    this.setState({ faceBoundingBoxes: boxes });
+    if (boxes) {
+      this.setState({ faceBoundingBoxes: boxes });
+    }
   };
 
   handleInputChange = (event) => {
@@ -82,7 +130,10 @@ class App extends Component {
         `${process.env.REACT_APP_SERVER}/api/clarifai/facedetection`,
         {
           method: "post",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: window.sessionStorage.getItem("token")
+          },
           body: JSON.stringify({
             input: this.state.input
           })
@@ -96,7 +147,10 @@ class App extends Component {
             `${process.env.REACT_APP_SERVER}/users/image`,
             {
               method: "put",
-              headers: { "Content-Type": "application/json" },
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: window.sessionStorage.getItem("token")
+              },
               body: JSON.stringify({
                 id: this.state.user.id
               })
@@ -120,14 +174,39 @@ class App extends Component {
   };
 
   /* handle sign and signout methods */
-  handleRouteChange = (route) => {
-    if (route === "signout" || route === "signin") {
+  handleRouteChange = async (route) => {
+    if (route === "signout") {
+      try {
+        const res = await fetch(
+          `${process.env.REACT_APP_SERVER}/users/signout`,
+          {
+            method: "get",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: window.sessionStorage.getItem("token")
+            }
+          }
+        );
+        if (res.status === 200) {
+          this.removeAuthTokenInSession();
+          this.setState(initialState);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+
+    } else if (route === "signin") {
       this.setState(initialState);
+      this.setState({ route: route });
     } else if (route === "home") {
       this.setState({ isSignedIn: true });
+      this.setState({ route: route });
     }
-    this.setState({ route: route });
   };
+
+  removeAuthTokenInSession = () => {
+    window.sessionStorage.removeItem("token");
+  }
 
   toggleModal = () => {
     this.setState((prevState) => ({
@@ -184,11 +263,11 @@ class App extends Component {
             loadUser={this.loadUser}
           />
         ) : (
-          <Signup
-            handleRouteChange={this.handleRouteChange}
-            loadUser={this.loadUser}
-          />
-        )}
+              <Signup
+                handleRouteChange={this.handleRouteChange}
+                loadUser={this.loadUser}
+              />
+            )}
       </div>
     );
   }
