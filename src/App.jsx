@@ -195,7 +195,7 @@ class App extends Component {
         console.log(err);
       }
 
-    } else if (route === "signin") {
+    } else if (route === "signin" || route === "signup") {
       this.setState(initialState);
       this.setState({ route: route });
     } else if (route === "home") {

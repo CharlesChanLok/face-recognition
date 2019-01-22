@@ -69,6 +69,10 @@ class Signup extends React.Component {
         return pass1 === pass2;
     }
 
+    saveAuthTokenInSession = (token) => {
+        window.sessionStorage.setItem("token", token);
+    };
+
     handleSubmit = async () => {
         const {
             name,
@@ -86,10 +90,26 @@ class Signup extends React.Component {
                     password: password
                 })
             });
-            const user = await res.json();
-            if (user.id) {
-                this.props.loadUser(user);
-                this.props.handleRouteChange('home');
+
+            const data = await res.json();
+            if (data.userId && data.success) {
+                this.saveAuthTokenInSession(data.token);
+                const res = await fetch(
+                    `${process.env.REACT_APP_SERVER}/profile/${data.userId}`,
+                    {
+                        method: "get",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: data.token
+                        }
+                    }
+                );
+
+                const user = await res.json();
+                if (user && user.email) {
+                    this.props.loadUser(user);
+                    this.props.handleRouteChange("home");
+                }
             }
         } else {
             console.log('passwords do not match!')
