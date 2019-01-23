@@ -4,6 +4,8 @@ import Avatar from "@material-ui/core/Avatar";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 
+import { ProfileApi } from "../../api/ProfileApi";
+
 import "./Profile.css";
 
 class Profile extends React.Component {
@@ -40,17 +42,7 @@ class Profile extends React.Component {
 
   handleProfileUpdate = async (data) => {
     try {
-      const res = await fetch(
-        `${process.env.REACT_APP_SERVER}/profile/${this.props.user.id}`,
-        {
-          method: "put",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": window.sessionStorage.getItem("token")
-          },
-          body: JSON.stringify({ formInput: data })
-        }
-      );
+      const res = await ProfileApi.updateProfile(this.props.user.id, { formInput: data });
       if (res.status === 200 || res.status === 304) {
         this.props.toggleModal();
         this.props.loadUser({ ...this.props.user, ...data });
@@ -74,9 +66,7 @@ class Profile extends React.Component {
             />
             <h2>{this.state.name}</h2>
             <h6>{`Images Submitted: ${user.entries}`}</h6>
-            <h6>{`Member since: ${new Date(
-              user.joined
-            ).toLocaleDateString()}`}</h6>
+            <h6>{`Member since: ${new Date(user.joined).toLocaleDateString()}`}</h6>
             <hr />
             <form
               className="profile-modal-container"

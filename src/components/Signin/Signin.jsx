@@ -1,5 +1,8 @@
 import React from "react";
 
+import { UserApi } from "../../api/UserApi";
+import { ProfileApi } from "../../api/ProfileApi";
+
 class Signin extends React.Component {
   constructor(props) {
     super(props);
@@ -22,27 +25,14 @@ class Signin extends React.Component {
   };
 
   handleSubmit = async () => {
-    const res = await fetch(`${process.env.REACT_APP_SERVER}/users/signin`, {
-      method: "post",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: this.state.email,
-        password: this.state.password
-      })
+    const res = await UserApi.signInUser({
+      email: this.state.email,
+      password: this.state.password
     });
     const data = await res.json();
     if (data.userId && data.success) {
       this.saveAuthTokenInSession(data.token);
-      const res = await fetch(
-        `${process.env.REACT_APP_SERVER}/profile/${data.userId}`,
-        {
-          method: "get",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: data.token
-          }
-        }
-      );
+      const res = await ProfileApi.getProfile(data.userId);
 
       const user = await res.json();
       if (user && user.email) {

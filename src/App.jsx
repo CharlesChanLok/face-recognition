@@ -11,6 +11,10 @@ import Signup from "./components/Signup/Signup";
 import Modal from "./components/Modal/Modal";
 import Profile from "./components/Profile/Profile";
 
+import { ProfileApi } from "./api/ProfileApi";
+import { UserApi } from "./api/UserApi";
+import { ClarifaiApi } from "./api/ClarifaiApi";
+
 const initialState = {
   input: "",
   imageUrl: "",
@@ -39,29 +43,10 @@ class App extends Component {
     const token = window.sessionStorage.getItem("token");
     try {
       if (token) {
-        const res = await fetch(
-          `${process.env.REACT_APP_SERVER}/users/signin`,
-          {
-            method: "post",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: token
-            }
-          }
-        );
+        const res = await UserApi.signInUser();
         const data = await res.json();
         if (data && data.id) {
-          const res = await fetch(
-            `${process.env.REACT_APP_SERVER}/profile/${data.id}`,
-            {
-              method: "get",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: token
-              }
-            }
-          );
-
+          const res = await ProfileApi.getProfile(data.id);
           const user = await res.json();
           if (user && user.email) {
             this.loadUser(user);
@@ -126,36 +111,16 @@ class App extends Component {
     imageInput.value = "";
 
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_SERVER}/api/clarifai/facedetection`,
-        {
-          method: "post",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: window.sessionStorage.getItem("token")
-          },
-          body: JSON.stringify({
-            input: this.state.input
-          })
-        }
-      );
+      const response = await ClarifaiApi.getFaceLocations({
+        input: this.state.input
+      });
       const clarifaiResponse = await response.json();
       //This will run only if the image url is valid and not the same image url
       if (clarifaiResponse.outputs && this.state.imageUrl !== newImage) {
         try {
-          const response = await fetch(
-            `${process.env.REACT_APP_SERVER}/users/image`,
-            {
-              method: "put",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: window.sessionStorage.getItem("token")
-              },
-              body: JSON.stringify({
-                id: this.state.user.id
-              })
-            }
-          );
+          const response = await UserApi.imageUploadForDetection({
+            id: this.state.user.id
+          });
           const entries = await response.json();
           this.setState({
             user: {
@@ -177,16 +142,7 @@ class App extends Component {
   handleRouteChange = async (route) => {
     if (route === "signout") {
       try {
-        const res = await fetch(
-          `${process.env.REACT_APP_SERVER}/users/signout`,
-          {
-            method: "get",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: window.sessionStorage.getItem("token")
-            }
-          }
-        );
+        const res = await UserApi.signOutUser();
         if (res.status === 200) {
           this.removeAuthTokenInSession();
           this.setState(initialState);
@@ -194,7 +150,6 @@ class App extends Component {
       } catch (err) {
         console.log(err);
       }
-
     } else if (route === "signin" || route === "signup") {
       this.setState(initialState);
       this.setState({ route: route });
@@ -206,7 +161,7 @@ class App extends Component {
 
   removeAuthTokenInSession = () => {
     window.sessionStorage.removeItem("token");
-  }
+  };
 
   toggleModal = () => {
     this.setState((prevState) => ({
@@ -263,11 +218,11 @@ class App extends Component {
             loadUser={this.loadUser}
           />
         ) : (
-              <Signup
-                handleRouteChange={this.handleRouteChange}
-                loadUser={this.loadUser}
-              />
-            )}
+          <Signup
+            handleRouteChange={this.handleRouteChange}
+            loadUser={this.loadUser}
+          />
+        )}
       </div>
     );
   }
